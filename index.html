@@ -38,8 +38,10 @@
   .floater{position:absolute;bottom:-90px;animation:floatUp linear infinite;will-change:transform;}
   .floater .obj{display:block;line-height:1;animation:bob ease-in-out infinite alternate;
     filter:drop-shadow(0 0 8px rgba(255,255,255,.7)) drop-shadow(0 0 16px rgba(255,126,182,.55));}
-  .floater .gem{position:absolute;font-size:.42em;animation:gemTwinkle 1.6s ease-in-out infinite;filter:drop-shadow(0 0 6px #fff);}
+  .floater .gem{position:absolute;font-size:.42em;color:#fff;animation:gemTwinkle 1.6s ease-in-out infinite;filter:drop-shadow(0 0 6px #fff);}
   @keyframes floatUp{0%{transform:translateY(0);opacity:0;}8%{opacity:.5;}92%{opacity:.5;}100%{transform:translateY(-118vh);opacity:0;}}
+  .floater.g{animation-name:floatUpBright;}
+  @keyframes floatUpBright{0%{transform:translateY(0);opacity:0;}8%{opacity:1;}92%{opacity:1;}100%{transform:translateY(-118vh);opacity:0;}}
   @keyframes bob{0%{transform:translateX(-14px) rotate(-12deg);}100%{transform:translateX(14px) rotate(12deg);}}
   @keyframes gemTwinkle{0%,100%{opacity:.3;transform:scale(.7);}50%{opacity:1;transform:scale(1.2);}}
   .wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:0 20px 90px;}
@@ -424,44 +426,86 @@ startMusic();
 ['click','touchstart','keydown'].forEach(ev => addEventListener(ev, e => { if (!(e.target.closest && e.target.closest('#music-fab'))) startMusic(); }, {once:true, passive:true}));
 setFab();
 
-// ---------- Floating decorations & food, dressed in jewels ----------
+// ---------- Floating faceted gems (+ a few party objects) ----------
 (function(){
-  const items = ['🪩','🎈','🎂','🍔','🍕','🍓','🍬','🧁','🥤','🍭','👑','🎁','🍩','🎀','💎','📿','🍰','🪩','💍','💎','💠','🔮','⭐','🌟','🪙','🦋','🩰','💖','🎀','👛'];
-  const gems  = ['💎','✨','💍','💜','🩷'];
+  const items = ['🪩','🎈','🎂','🍓','🧁','👑','🎁','🍰','🎀','🦋'];
   const box = document.getElementById('floaters');
-  const stones = [['#ffffff','#9fe9ff','#3fb6e8'],['#ffd6ea','#ff7eb6','#d63384'],['#e4d4ff','#9b6bff','#5a2fc2'],['#fff6d0','#ffd98a','#e0a526'],['#d6fff0','#5be3b5','#14a37a']];
-  function stoneSVG(c, shape){
-    const id = 'g' + Math.random().toString(36).slice(2,8);
-    const defs = `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c[0]}"/><stop offset=".5" stop-color="${c[1]}"/><stop offset="1" stop-color="${c[2]}"/></linearGradient></defs>`;
-    const body = shape === 0
-      ? `<polygon points="20,2 36,14 20,38 4,14" fill="url(#${id})" stroke="#fff" stroke-width="1.4"/><polyline points="4,14 36,14" stroke="#fff" stroke-width="1" opacity=".8"/><polyline points="12,14 20,2 28,14 20,38 12,14" fill="none" stroke="#fff" stroke-width=".9" opacity=".7"/>`
-      : shape === 1
-      ? `<circle cx="20" cy="20" r="15" fill="url(#${id})" stroke="#fff" stroke-width="1.4"/><circle cx="14" cy="13" r="4.5" fill="#fff" opacity=".7"/>`
-      : `<polygon points="20,2 25,15 38,20 25,25 20,38 15,25 2,20 15,15" fill="url(#${id})" stroke="#fff" stroke-width="1.2"/>`;
-    return `<svg viewBox="0 0 40 40" width="1em" height="1em">${defs}${body}</svg>`;
+  const COL = {
+    emerald:['#c8ffe3','#22d58f','#0a7a50'], amethyst:['#f3e3ff','#a45bff','#5a1fb8'],
+    sapphire:['#d8e7ff','#4f82ff','#1d3aa8'], rose:['#ffe3f0','#ff6fb0','#c4246f'],
+    topaz:['#fff4c9','#ffc447','#c77a0a'], diamond:['#ffffff','#d9eeff','#9cc3ee'],
+    aqua:['#d6fffb','#3fe0d0','#0f8f9a']
+  };
+  const names = Object.keys(COL);
+  function ln(x1,y1,x2,y2,o){ return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#fff" stroke-opacity="${o||.55}" stroke-width=".9"/>`; }
+  function shapeSVG(type, id){
+    const fill = `fill="url(#${id})" stroke="#fff" stroke-width="1.3" stroke-linejoin="round"`;
+    switch(type){
+      case 'emerald': return `<polygon points="10,3 30,3 37,10 37,30 30,37 10,37 3,30 3,10" ${fill}/>
+        <polygon points="10,3 30,3 26,9 14,9" fill="#fff" fill-opacity=".38"/><polygon points="3,10 10,3 14,9 9,14" fill="#fff" fill-opacity=".16"/>
+        <polygon points="37,10 30,3 26,9 31,14" fill="#000" fill-opacity=".10"/><polygon points="37,30 30,37 26,31 31,26" fill="#000" fill-opacity=".22"/>
+        <polygon points="10,37 30,37 26,31 14,31" fill="#000" fill-opacity=".30"/><polygon points="3,30 10,37 14,31 9,26" fill="#000" fill-opacity=".14"/>
+        <polygon points="14,9 26,9 31,14 31,26 26,31 14,31 9,26 9,14" fill="#fff" fill-opacity=".14" stroke="#fff" stroke-opacity=".6" stroke-width=".9"/>`;
+      case 'pear': return `<path d="M20 2 C27 13 35 19 35 27 A15 12 0 0 1 5 27 C5 19 13 13 20 2Z" ${fill}/>
+        <path d="M20 2 C14 12 9 17 8 24 L20 24Z" fill="#fff" fill-opacity=".34"/><path d="M20 2 C26 12 31 17 32 24 L20 24Z" fill="#000" fill-opacity=".12"/>
+        <path d="M8 24 L32 24 C30 33 24 38 20 39 C16 38 10 33 8 24Z" fill="#000" fill-opacity=".24"/>${ln(20,2,20,39)}${ln(8,24,32,24)}${ln(20,24,12,35)}${ln(20,24,28,35)}`;
+      case 'heart': return `<path d="M20 37 L3.5 20.5 C-.5 15 2 5.5 10.5 5.5 C15 5.5 18 8.5 20 11.5 C22 8.5 25 5.5 29.5 5.5 C38 5.5 40.5 15 36.5 20.5 Z" ${fill}/>
+        <path d="M20 11.5 C18 8.5 15 5.5 10.5 5.5 C6 5.5 3.5 9 4 13 L20 20Z" fill="#fff" fill-opacity=".36"/>
+        <path d="M20 37 L3.5 20.5 L20 20 L36.5 20.5Z" fill="#000" fill-opacity=".22"/>${ln(20,11.5,20,37)}${ln(10.5,5.5,20,20)}${ln(29.5,5.5,20,20)}${ln(3.5,20.5,36.5,20.5)}`;
+      case 'shard': return `<polygon points="20,1 29,10 29,31 20,39 11,31 11,10" ${fill}/>
+        <polygon points="20,1 20,39 11,31 11,10" fill="#fff" fill-opacity=".34"/><polygon points="20,1 29,10 29,31 20,39" fill="#000" fill-opacity=".14"/>
+        <polygon points="11,10 20,1 29,10 20,16" fill="#fff" fill-opacity=".38"/>${ln(11,10,20,16)}${ln(29,10,20,16)}${ln(20,16,20,39,.4)}${ln(11,31,29,31,.4)}`;
+      case 'round': {
+        let t='';
+        for(let i=0;i<8;i++){ const a=i*Math.PI/4+Math.PI/8, b=i*Math.PI/4;
+          t += ln(20+7*Math.cos(a), 20+7*Math.sin(a), 20+17*Math.cos(b), 20+17*Math.sin(b)); }
+        const pts = [0,1,2,3,4,5,6,7].map(i => (20+8*Math.cos(i*Math.PI/4+Math.PI/8)).toFixed(1)+','+(20+8*Math.sin(i*Math.PI/4+Math.PI/8)).toFixed(1)).join(' ');
+        return `<circle cx="20" cy="20" r="17" ${fill}/><polygon points="${pts}" fill="#fff" fill-opacity=".3" stroke="#fff" stroke-opacity=".8" stroke-width=".9"/>${t}
+          <path d="M8 12 A14 14 0 0 1 20 4 L20 20Z" fill="#fff" fill-opacity=".22"/>`; }
+      default: return `<polygon points="20,2 38,20 20,38 2,20" ${fill}/>
+        <polygon points="20,2 38,20 20,20" fill="#fff" fill-opacity=".30"/><polygon points="20,38 2,20 20,20" fill="#000" fill-opacity=".22"/>
+        <polygon points="20,10 30,20 20,30 10,20" fill="#fff" fill-opacity=".18" stroke="#fff" stroke-opacity=".7" stroke-width=".9"/>`;
+    }
   }
+  const types = ['emerald','emerald','pear','heart','shard','shard','round','cushion'];
+  function gemSVG(){
+    const type = types[Math.floor(Math.random()*types.length)];
+    const c = COL[names[Math.floor(Math.random()*names.length)]];
+    const id = 'g' + Math.random().toString(36).slice(2,9);
+    const svg = `<svg viewBox="0 0 40 40" width="1em" height="1em"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="${c[0]}"/><stop offset=".5" stop-color="${c[1]}"/><stop offset="1" stop-color="${c[2]}"/></linearGradient></defs>${shapeSVG(type,id)}</svg>`;
+    return {svg, glow:c[1], type};
+  }
+  const glint = '<svg viewBox="0 0 20 20" width="1em" height="1em"><path d="M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8Z" fill="#fff"/></svg>';
   function spawn(init){
     const f = document.createElement('div'); f.className = 'floater';
-    const size = 26 + Math.random()*34, dur = 14 + Math.random()*14;
+    const isGem = Math.random() < 0.82;
+    const size = isGem ? 38 + Math.random()*46 : 26 + Math.random()*26, dur = 14 + Math.random()*14;
     f.style.left = (Math.random()*94) + '%';
     f.style.fontSize = size + 'px';
     f.style.animationDuration = dur + 's';
     f.style.animationDelay = (init ? -Math.random()*dur : 0) + 's';
     const o = document.createElement('span'); o.className = 'obj';
-    if (Math.random() < 0.45) o.innerHTML = stoneSVG(stones[Math.floor(Math.random()*stones.length)], Math.floor(Math.random()*3));
-    else o.textContent = items[Math.floor(Math.random()*items.length)];
+    if (isGem){
+      f.classList.add('g');
+      const g = gemSVG();
+      o.innerHTML = g.svg;
+      o.style.filter = `brightness(1.25) saturate(1.3) drop-shadow(0 0 5px ${g.glow}) drop-shadow(0 0 14px ${g.glow}) drop-shadow(0 0 4px #fff)`;
+      if (g.type === 'shard') o.firstChild.style.width = '.62em';
+      [[.78,-.12,.38],[-.18,.55,.26]].forEach(([x,y,z],i) => {
+        const s = document.createElement('span'); s.className = 'gem'; s.innerHTML = glint;
+        s.style.cssText = `left:${x*100}%;top:${y*100}%;font-size:${z}em;animation-delay:${i*.7}s;`;
+        f.appendChild(s);
+      });
+    } else {
+      o.textContent = items[Math.floor(Math.random()*items.length)];
+    }
     o.style.animationDuration = (3 + Math.random()*3) + 's';
-    f.appendChild(o);
-    [[-.25,-.1],[.75,.05],[.3,.8]].forEach(([x,y],i) => {
-      const g = document.createElement('span'); g.className = 'gem';
-      g.textContent = gems[Math.floor(Math.random()*gems.length)];
-      g.style.left = (x*100) + '%'; g.style.top = (y*100) + '%';
-      g.style.animationDelay = (i*.5) + 's'; f.appendChild(g);
-    });
+    f.insertBefore(o, f.firstChild);
     box.appendChild(f);
     f.addEventListener('animationiteration', e => { if (e.target === f) f.style.left = (Math.random()*94) + '%'; });
   }
-  const n = innerWidth < 600 ? 14 : 30;
+  const n = innerWidth < 600 ? 24 : 46;
   for (let i = 0; i < n; i++) spawn(true);
 })();
 </script>
