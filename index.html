@@ -242,8 +242,9 @@ const CHILD_NAME       = "Avyanna";                 // niece's name
 const EVENT_DATETIME_ISO = "2026-10-16T18:00:00";   // party start (local time)
 const EVENT_DATE_LABEL = "Friday, Oct 16, 2026";
 const EVENT_TIME_LABEL = "6:00 PM onwards";
-const VENUE_NAME       = "Function Hall, Singapore";
-const VENUE_MAP_URL    = "";                        // Google Maps link (optional)
+const VENUE_NAME       = "Function Room, River Isles";
+const VENUE_ADDRESS    = "52 Edgedale Plains, Singapore 828820";
+const VENUE_MAP_URL    = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent("River Isles, 52 Edgedale Plains, Singapore 828820");                        // Google Maps link (optional)
 const RSVP_BY_LABEL    = "Oct 14, 2026";
 const WHATSAPP_NUMBER  = "6597126257";                      // host's WhatsApp, country code, no + or spaces
 
@@ -263,7 +264,7 @@ document.getElementById('d-date').textContent = EVENT_DATE_LABEL;
 document.getElementById('d-time').textContent = EVENT_TIME_LABEL;
 document.getElementById('d-venue').textContent = VENUE_NAME;
 document.getElementById('d-rsvp').textContent = RSVP_BY_LABEL;
-if (VENUE_MAP_URL) document.getElementById('d-map').innerHTML = `<a href="${VENUE_MAP_URL}" target="_blank" style="color:var(--ice);">Get directions ↗</a>`;
+document.getElementById('d-map').innerHTML = VENUE_ADDRESS + (VENUE_MAP_URL ? `<br><a href="${VENUE_MAP_URL}" target="_blank" style="color:var(--ice);">Get directions ↗</a>` : '');
 
 // Sparkle background
 const sc = document.getElementById('sparkles');
@@ -391,7 +392,7 @@ function downloadICS(){
   const s = new Date(EVENT_DATETIME_ISO), en = new Date(s.getTime() + 3*36e5);
   const f = d => d.toISOString().replace(/[-:]/g,'').split('.')[0] + 'Z';
   const ics = ['BEGIN:VCALENDAR','VERSION:2.0','BEGIN:VEVENT',`DTSTART:${f(s)}`,`DTEND:${f(en)}`,
-    `SUMMARY:${CHILD_NAME}'s Bejewelled 10th Birthday`,`LOCATION:${VENUE_NAME}`,'DESCRIPTION:Come Bejewelled! Sparkles, sequins and a disco ball.','END:VEVENT','END:VCALENDAR'].join('\r\n');
+    `SUMMARY:${CHILD_NAME}'s Bejewelled 10th Birthday`,`LOCATION:${VENUE_NAME}, ${VENUE_ADDRESS}`,'DESCRIPTION:Come Bejewelled! Sparkles, sequins and a disco ball.','END:VEVENT','END:VCALENDAR'].join('\r\n');
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([ics], {type:'text/calendar'}));
   a.download = 'bejewelled-birthday.ics'; a.click();
 }
