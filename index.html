@@ -6,7 +6,7 @@
 <title>Bejewelled 10th Birthday Bash</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@800;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --silver:#e8ecf5;
@@ -35,7 +35,8 @@
 
   #music-fab{position:fixed;bottom:22px;left:22px;z-index:500;background:rgba(0,0,0,.55);color:#fff;border:1.5px solid var(--ice);border-radius:999px;padding:12px 18px;font-weight:600;font-size:13px;box-shadow:0 0 16px rgba(139,233,255,.35);cursor:pointer;font-family:'Poppins',sans-serif;backdrop-filter:blur(4px);}
   .floaters{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
-  .floater{position:absolute;bottom:-90px;animation:floatUp linear infinite;will-change:transform;}
+  .floater{position:absolute;bottom:-90px;animation:floatUp linear infinite;}
+  .glowdisc{position:absolute;left:50%;top:50%;width:190%;height:190%;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;}
   .floater .obj{display:block;line-height:1;animation:bob ease-in-out infinite alternate;
     filter:drop-shadow(0 0 8px rgba(255,255,255,.7)) drop-shadow(0 0 16px rgba(255,126,182,.55));}
   .floater .gem{position:absolute;font-size:.42em;color:#fff;animation:gemTwinkle 1.6s ease-in-out infinite;filter:drop-shadow(0 0 6px #fff);}
@@ -56,10 +57,10 @@
   .ball-col{position:relative;display:flex;flex-direction:column;align-items:center;}
   .ball-col .beams{position:absolute;left:50%;top:0;width:520px;height:420px;z-index:0;}
   .ball-col .ball-string{flex:none;position:relative;z-index:1;height:clamp(60px,18vw,250px);}
-  .ball-col .discoball{flex:none;display:block;position:relative;z-index:1;width:92%;max-width:200px;height:auto;
-    filter:drop-shadow(0 0 16px rgba(255,255,255,.4)) drop-shadow(0 0 34px rgba(155,107,255,.55));}
+  .ball-col .discoball{flex:none;display:block;position:relative;z-index:1;width:92%;max-width:200px;height:auto;border-radius:50%;
+    box-shadow:0 0 22px rgba(255,255,255,.35),0 0 46px rgba(155,107,255,.5);}
   .burst{position:absolute;inset:0;z-index:0;pointer-events:none;}
-  .burst .bgem{position:absolute;left:0;top:0;will-change:transform,opacity;}
+  .burst .bgem{position:absolute;left:0;top:0;}
   .poster-top{position:relative;z-index:1;aspect-ratio:600/890;}
   .poster-top::before{content:'';position:absolute;inset:0;background:url('poster-bg.jpg') center top/cover no-repeat;border-radius:0 0 24px 24px;filter:saturate(1.1);
     -webkit-mask-image:linear-gradient(#000 82%,transparent 100%);mask-image:linear-gradient(#000 82%,transparent 100%);}
@@ -162,6 +163,17 @@
   @keyframes confettiFall{0%{transform:translateY(0) rotate(0);opacity:1;}100%{transform:translateY(100vh) rotate(540deg);opacity:0;}}
   @media (min-width:520px){.details-grid{grid-template-columns:1fr 1fr;}}
   @media (max-width:700px){.poster-top{aspect-ratio:600/1150;}}
+  section{content-visibility:auto;contain-intrinsic-size:auto 520px;}
+  #sparkles,.floaters{contain:strict;}
+  /* lite mode: phones / touch / low-core devices */
+  .lite .card{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(22,12,44,.9);}
+  .lite .hero h1,.lite .sub-title,.lite .big10 span,.lite .badge{animation:none;filter:none;}
+  .lite .beams{animation:none;}
+  .lite .glow-dot{display:none;}
+  .lite .poster-top::before{filter:none;}
+  .lite .floater .obj{filter:none;}
+  .lite .floater .gem{filter:none;}
+  @media (prefers-reduced-motion:reduce){.floaters,.burst,#sparkles{display:none;}}
 </style>
 </head>
 <body>
@@ -171,7 +183,7 @@
 
   <div class="hero">
     <button id="music-fab" onclick="toggleMusic()">🔊 Play music</button>
-    <audio id="bg-audio" src="Taylor%20Swift%20-%20Bejeweled%20Lyric%20Video.mp3" loop preload="auto"></audio>
+    <audio id="bg-audio" src="Taylor%20Swift%20-%20Bejeweled%20Lyric%20Video.mp3" loop preload="none"></audio>
     <div class="top-row">
       <div class="burst" id="burst"></div>
       <div class="ball-col"><div class="beams"></div><div class="ball-string"></div><canvas class="discoball" width="560" height="560"></canvas></div>
@@ -267,6 +279,8 @@
 </div>
 
 <script>
+const LITE = matchMedia('(max-width:900px), (pointer:coarse)').matches || (navigator.hardwareConcurrency || 8) <= 4;
+if (LITE) document.documentElement.classList.add('lite');
 // ====== EDIT THESE BEFORE SHARING ======
 const CHILD_NAME       = "Avyanna";                 // niece's name
 const EVENT_DATETIME_ISO = "2026-10-16T18:00:00";   // party start (local time)
@@ -298,7 +312,7 @@ document.getElementById('d-map').innerHTML = VENUE_ADDRESS + (VENUE_MAP_URL ? `<
 
 // Sparkle background
 const sc = document.getElementById('sparkles');
-for (let i = 0; i < 50; i++) {
+for (let i = 0; i < (LITE ? 14 : 40); i++) {
   const s = document.createElement('div'); s.className = 'sparkle';
   const z = Math.random()*3+1;
   s.style.cssText = `width:${z}px;height:${z}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${Math.random()*3+2}s;animation-delay:${Math.random()*3}s`;
@@ -309,14 +323,16 @@ let lastTs = 0;
 function glow(x, y){ const n = Date.now(); if (n-lastTs<35) return; lastTs=n;
   const d = document.createElement('div'); d.className='glow-dot'; const z=Math.random()*14+10;
   d.style.cssText=`width:${z}px;height:${z}px;left:${x}px;top:${y}px`; document.body.appendChild(d); setTimeout(()=>d.remove(),700); }
-addEventListener('mousemove', e => glow(e.clientX, e.clientY));
-addEventListener('touchmove', e => { if (e.touches[0]) glow(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
+if (!LITE) addEventListener('mousemove', e => glow(e.clientX, e.clientY));
 
 // ---------- Disco ball (canvas, rotating mirror tiles) ----------
 document.querySelectorAll('.discoball').forEach(function(cv){
   const ctx = cv.getContext('2d');
-  const W = cv.width, R = W*0.46, C = W/2;
-  const LAT = 18, LON = 36;
+  cv.width = cv.height = LITE ? 240 : 360;
+  const W = cv.width, R = W*0.495, C = W/2;
+  const LAT = LITE ? 12 : 16, LON = LITE ? 24 : 32;
+  let visible = true, last = 0;
+  if ('IntersectionObserver' in window) new IntersectionObserver(es => { visible = es[0].isIntersecting; }).observe(cv);
   const tiles = [];
   for (let i = 0; i < LAT; i++) for (let j = 0; j < LON; j++) tiles.push({i, j, seed: Math.random()*6.28, hue: [320,190,270,45,0][Math.floor(Math.random()*5)]});
   function pt(lat, lon, rot){
@@ -324,6 +340,9 @@ document.querySelectorAll('.discoball').forEach(function(cv){
     return [C + x*R, C - y*R, z];
   }
   function frame(t){
+    requestAnimationFrame(frame);
+    if (!visible || document.hidden || t - last < 33) return;
+    last = t;
     ctx.clearRect(0,0,W,W);
     const rot = t/4200;
     const g = ctx.createRadialGradient(C-R*.3, C-R*.3, R*.1, C, C, R);
@@ -342,7 +361,6 @@ document.querySelectorAll('.discoball').forEach(function(cv){
       ctx.fill();
       ctx.strokeStyle = 'rgba(8,4,20,.75)'; ctx.lineWidth = 1.1; ctx.stroke();
     });
-    requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 });
@@ -435,7 +453,7 @@ let musicOn = false;
 function setFab(){ fab.textContent = musicOn ? '🔊 Music on' : '🔇 Play music'; }
 function startMusic(){ if (musicOn) return; bgAudio.volume = 0.6; bgAudio.play().then(()=>{ musicOn = true; setFab(); }).catch(()=>{}); }
 function toggleMusic(){ if (musicOn){ bgAudio.pause(); musicOn = false; } else { startMusic(); return; } setFab(); }
-startMusic();
+if (!LITE) startMusic();
 ['click','touchstart','keydown'].forEach(ev => addEventListener(ev, e => { if (!(e.target.closest && e.target.closest('#music-fab'))) startMusic(); }, {once:true, passive:true}));
 setFab();
 
@@ -503,7 +521,8 @@ setFab();
       f.classList.add('g');
       const g = gemSVG();
       o.innerHTML = g.svg;
-      o.style.filter = `brightness(1.25) saturate(1.3) drop-shadow(0 0 5px ${g.glow}) drop-shadow(0 0 14px ${g.glow}) drop-shadow(0 0 4px #fff)`;
+      if (LITE) { const gd = document.createElement('span'); gd.className = 'glowdisc'; gd.style.background = `radial-gradient(circle, ${g.glow}aa 0%, ${g.glow}00 62%)`; o.style.position = 'relative'; o.insertBefore(gd, o.firstChild); }
+      else o.style.filter = `brightness(1.25) saturate(1.3) drop-shadow(0 0 5px ${g.glow}) drop-shadow(0 0 14px ${g.glow}) drop-shadow(0 0 4px #fff)`;
       if (g.type === 'shard') o.firstChild.style.width = '.62em';
       [[.78,-.12,.38],[-.18,.55,.26]].forEach(([x,y,z],i) => {
         const s = document.createElement('span'); s.className = 'gem'; s.innerHTML = glint;
@@ -518,13 +537,13 @@ setFab();
     box.appendChild(f);
     f.addEventListener('animationiteration', e => { if (e.target === f) f.style.left = (Math.random()*94) + '%'; });
   }
-  const n = innerWidth < 600 ? 24 : 46;
+  const n = LITE ? 11 : 30;
   for (let i = 0; i < n; i++) spawn(true);
 
   // Gems burst out of the poster's left & right edges, fanning outward (like the ones on the poster)
   const burst = document.getElementById('burst'), poster = document.querySelector('.poster-top'), row = document.querySelector('.top-row');
   if (burst && poster && row && burst.animate) {
-    const count = innerWidth < 600 ? 12 : 22;
+    const count = LITE ? 8 : 16;
     for (let i = 0; i < count; i++) {
       const side = i % 2 ? 1 : -1;                       // -1 = left, 1 = right
       const g = gemSVG();
@@ -532,7 +551,8 @@ setFab();
       const el = document.createElement('div'); el.className = 'bgem';
       el.style.fontSize = size + 'px';
       el.innerHTML = g.svg;
-      el.firstChild.style.cssText = `display:block;filter:brightness(1.25) saturate(1.3) drop-shadow(0 0 6px ${g.glow}) drop-shadow(0 0 16px ${g.glow}) drop-shadow(0 0 4px #fff);` + (g.type === 'shard' ? 'width:.62em;' : '');
+      el.firstChild.style.cssText = 'display:block;position:relative;' + (LITE ? '' : `filter:brightness(1.25) saturate(1.3) drop-shadow(0 0 6px ${g.glow}) drop-shadow(0 0 16px ${g.glow}) drop-shadow(0 0 4px #fff);`) + (g.type === 'shard' ? 'width:.62em;' : '');
+      if (LITE) { const gd = document.createElement('span'); gd.className = 'glowdisc'; gd.style.background = `radial-gradient(circle, ${g.glow}aa 0%, ${g.glow}00 62%)`; el.appendChild(gd); }
       const sp = document.createElement('span'); sp.innerHTML = glint;
       sp.style.cssText = 'position:absolute;right:-30%;top:-25%;font-size:.4em;color:#fff;';
       el.appendChild(sp);
