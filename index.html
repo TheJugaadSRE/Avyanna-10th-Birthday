@@ -19,22 +19,22 @@
     --bg3:#25103f;
     --card:rgba(22,12,44,0.68);
   }
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden;background:#0a0716;}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{
     font-family:'Poppins',sans-serif;color:#f6f0ff;min-height:100vh;overflow-x:hidden;
     background:linear-gradient(165deg,var(--bg1) 0%,var(--bg2) 50%,var(--bg3) 100%);
-    background-attachment:fixed;
   }
   h1,h2,h3{font-family:'Cinzel',serif;}
-  #sparkles{position:fixed;inset:0;pointer-events:none;z-index:0;}
+  #sparkles{position:fixed;top:0;left:0;width:100%;height:100vh;pointer-events:none;z-index:0;}
   .sparkle{position:absolute;border-radius:50%;background:radial-gradient(circle,#fff 0%,transparent 70%);animation:twinkle linear infinite;}
   @keyframes twinkle{0%,100%{opacity:.1;transform:scale(.7);}50%{opacity:.95;transform:scale(1.4);}}
   .glow-dot{position:fixed;pointer-events:none;z-index:9999;border-radius:50%;transform:translate(-50%,-50%);
     background:radial-gradient(circle,#fff 0%,rgba(255,126,182,.6) 40%,transparent 75%);animation:dotFade .7s ease-out forwards;}
   @keyframes dotFade{0%{opacity:.9;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(.2);}}
 
-  #music-fab{position:fixed;bottom:22px;left:22px;z-index:500;background:rgba(0,0,0,.55);color:#fff;border:1.5px solid var(--ice);border-radius:999px;padding:12px 18px;font-weight:600;font-size:13px;box-shadow:0 0 16px rgba(139,233,255,.35);cursor:pointer;font-family:'Poppins',sans-serif;backdrop-filter:blur(4px);}
-  .floaters{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+  #music-fab{position:fixed;bottom:calc(22px + env(safe-area-inset-bottom));left:22px;z-index:500;background:rgba(0,0,0,.55);color:#fff;border:1.5px solid var(--ice);border-radius:999px;padding:12px 18px;font-weight:600;font-size:13px;box-shadow:0 0 16px rgba(139,233,255,.35);cursor:pointer;font-family:'Poppins',sans-serif;backdrop-filter:blur(4px);}
+  .floaters{position:fixed;top:0;left:0;width:100%;height:100vh;pointer-events:none;z-index:0;overflow:hidden;}
   .floater{position:absolute;bottom:-90px;animation:floatUp linear infinite;}
   .glowdisc{position:absolute;left:50%;top:50%;width:190%;height:190%;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;}
   .floater .obj{display:block;line-height:1;animation:bob ease-in-out infinite alternate;
@@ -52,18 +52,19 @@
   .hero{text-align:center;padding:0 0 10px;position:relative;margin:0;}
   .hero > *{position:relative;z-index:1;}
   /* top row: disco ball | big Taylor poster (name + 10 sit on it) | disco ball */
-  .top-row{display:grid;grid-template-columns:1fr min(64vw,720px) 1fr;align-items:stretch;width:min(1300px,100vw);
-    position:relative;left:50%;transform:translateX(-50%);}
+  .top-row{display:grid;grid-template-columns:1fr min(64vw,720px) 1fr;align-items:stretch;width:100vw;margin-left:calc(50% - 50vw);
+    position:relative;overflow:hidden;}
+  @supports (overflow:clip){.top-row{overflow:visible;overflow-x:clip;}}
   .ball-col{position:relative;display:flex;flex-direction:column;align-items:center;}
   .ball-col .beams{position:absolute;left:50%;top:0;width:520px;height:420px;z-index:0;}
   .ball-col .ball-string{flex:none;position:relative;z-index:1;height:clamp(60px,18vw,250px);}
   .ball-col .discoball{flex:none;display:block;position:relative;z-index:1;width:92%;max-width:200px;height:auto;border-radius:50%;
     box-shadow:0 0 22px rgba(255,255,255,.35),0 0 46px rgba(155,107,255,.5);}
-  .burst{position:absolute;inset:0;z-index:0;pointer-events:none;}
+  .burst{position:absolute;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;}
   .burst .bgem{position:absolute;left:0;top:0;}
-  .poster-top{position:relative;z-index:1;aspect-ratio:864/825;}
+  .poster-top{position:relative;z-index:1;height:0;padding-top:95.49%;}
   /* the uploaded photo is 864x1217; its title lettering is the top 392px, so align the bottom and let the top overflow (clipped) */
-  .poster-top::before{content:'';position:absolute;inset:0;background:url('photo_2026-10-11_16-58-24.jpg') center bottom/100% auto no-repeat;border-radius:0 0 20px 20px;
+  .poster-top::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url('photo_2026-10-11_16-58-24.jpg') center bottom/100% auto no-repeat;border-radius:0 0 20px 20px;
     -webkit-mask-image:linear-gradient(transparent 0,#000 7%);mask-image:linear-gradient(transparent 0,#000 7%);}
   .poster-text{position:relative;z-index:2;text-align:center;margin-top:6px;}
   .poster-text .invite-label{margin-top:0;}
@@ -172,6 +173,7 @@
   .lite .glow-dot{display:none;}
   .lite .floater .obj{filter:none;}
   .lite .floater .gem{filter:none;}
+  .scrolling .floater,.scrolling .floater .obj,.scrolling .floater .gem,.scrolling .sparkle,.scrolling .beams{animation-play-state:paused !important;}
   @media (prefers-reduced-motion:reduce){.floaters,.burst,#sparkles{display:none;}}
 </style>
 </head>
@@ -280,6 +282,11 @@
 <script>
 const LITE = matchMedia('(max-width:900px), (pointer:coarse)').matches || (navigator.hardwareConcurrency || 8) <= 4;
 if (LITE) document.documentElement.classList.add('lite');
+const burstAnims = [];
+if (LITE) { let tm, on = false; addEventListener('scroll', () => {
+  if (!on) { on = true; document.documentElement.classList.add('scrolling'); burstAnims.forEach(a => a.pause()); }
+  clearTimeout(tm); tm = setTimeout(() => { on = false; document.documentElement.classList.remove('scrolling'); burstAnims.forEach(a => a.play()); }, 140);
+}, {passive:true}); }
 // ====== EDIT THESE BEFORE SHARING ======
 const CHILD_NAME       = "Avyanna";                 // niece's name
 const EVENT_DATETIME_ISO = "2026-10-16T18:00:00";   // party start (local time)
@@ -311,7 +318,7 @@ document.getElementById('d-map').innerHTML = VENUE_ADDRESS + (VENUE_MAP_URL ? `<
 
 // Sparkle background
 const sc = document.getElementById('sparkles');
-for (let i = 0; i < (LITE ? 14 : 40); i++) {
+for (let i = 0; i < (LITE ? 10 : 40); i++) {
   const s = document.createElement('div'); s.className = 'sparkle';
   const z = Math.random()*3+1;
   s.style.cssText = `width:${z}px;height:${z}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${Math.random()*3+2}s;animation-delay:${Math.random()*3}s`;
@@ -327,7 +334,7 @@ if (!LITE) addEventListener('mousemove', e => glow(e.clientX, e.clientY));
 // ---------- Disco ball (canvas, rotating mirror tiles) ----------
 document.querySelectorAll('.discoball').forEach(function(cv){
   const ctx = cv.getContext('2d');
-  cv.width = cv.height = LITE ? 240 : 360;
+  cv.width = cv.height = LITE ? 200 : 360;
   const W = cv.width, R = W*0.495, C = W/2;
   const LAT = LITE ? 12 : 16, LON = LITE ? 24 : 32;
   let visible = true, last = 0;
@@ -340,7 +347,7 @@ document.querySelectorAll('.discoball').forEach(function(cv){
   }
   function frame(t){
     requestAnimationFrame(frame);
-    if (!visible || document.hidden || t - last < 33) return;
+    if (!visible || document.hidden || document.documentElement.classList.contains('scrolling') || t - last < (LITE ? 50 : 33)) return;
     last = t;
     ctx.clearRect(0,0,W,W);
     const rot = t/4200;
@@ -536,13 +543,13 @@ setFab();
     box.appendChild(f);
     f.addEventListener('animationiteration', e => { if (e.target === f) f.style.left = (Math.random()*94) + '%'; });
   }
-  const n = LITE ? 11 : 30;
+  const n = LITE ? 8 : 30;
   for (let i = 0; i < n; i++) spawn(true);
 
   // Gems burst out of the poster's left & right edges, fanning outward (like the ones on the poster)
   const burst = document.getElementById('burst'), poster = document.querySelector('.poster-top'), row = document.querySelector('.top-row');
   if (burst && poster && row && burst.animate) {
-    const count = LITE ? 8 : 16;
+    const count = LITE ? 6 : 16;
     for (let i = 0; i < count; i++) {
       const side = i % 2 ? 1 : -1;                       // -1 = left, 1 = right
       const g = gemSVG();
@@ -567,11 +574,11 @@ setFab();
         return [side*Math.cos(ang)*dist, Math.sin(ang)*dist];
       };
       const [dx, dy] = place();
-      el.animate([
+      burstAnims.push(el.animate([
         {transform:'translate(0,0) scale(.25) rotate(0deg)', opacity:0},
         {transform:`translate(${dx*.15}px,${dy*.15}px) scale(.9) rotate(${side*40}deg)`, opacity:1, offset:.14},
         {transform:`translate(${dx}px,${dy}px) scale(1.15) rotate(${side*220}deg)`, opacity:0}
-      ], {duration: dur, delay, iterations: Infinity, easing:'ease-out'});
+      ], {duration: dur, delay, iterations: Infinity, easing:'ease-out'}));
     }
   }
 })();
