@@ -62,10 +62,11 @@
     box-shadow:0 0 22px rgba(255,255,255,.35),0 0 46px rgba(155,107,255,.5);}
   .burst{position:absolute;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;}
   .burst .bgem{position:absolute;left:0;top:0;}
-  .poster-top{position:relative;z-index:1;height:0;padding-top:95.49%;}
-  /* the uploaded photo is 864x1217; its title lettering is the top 392px, so align the bottom and let the top overflow (clipped) */
-  .poster-top::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url('photo_2026-10-11_16-58-24.jpg') center bottom/100% auto no-repeat;border-radius:0 0 20px 20px;
-    -webkit-mask-image:linear-gradient(transparent 0,#000 7%);mask-image:linear-gradient(transparent 0,#000 7%);}
+  /* poster-top.jpg = your uploaded photo (photo_2026-10-11_16-58-24.jpg) with the title lettering painted out and cropped just above her hair.
+     margin-top = ~1 inch of breathing room above her head. */
+  .poster-top{position:relative;z-index:1;height:0;padding-top:99.19%;margin-top:clamp(36px,10vw,96px);}
+  .poster-top::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url('poster-top.jpg') center/100% 100% no-repeat;border-radius:20px;
+    -webkit-mask-image:linear-gradient(transparent 0,#000 1.4%);mask-image:linear-gradient(transparent 0,#000 1.4%);}
   .poster-text{position:relative;z-index:2;text-align:center;margin-top:6px;}
   .poster-text .invite-label{margin-top:0;}
   .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
