@@ -293,6 +293,10 @@ const VENUE_NAME       = "Function Room, River Isles";
 const VENUE_ADDRESS    = "52 Edgedale Plains, Singapore 828820";
 const VENUE_MAP_URL    = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent("River Isles, 52 Edgedale Plains, Singapore 828820");                        // Google Maps link (optional)
 const RSVP_BY_LABEL    = "Oct 14, 2026";
+// Shared RSVP counts: paste your Firebase web-app config here (Firebase console > Project settings > Your apps).
+// Leave as null to keep RSVPs on each guest's own device only (counts will NOT be shared between phones).
+const FIREBASE_CONFIG  = null;   // e.g. { apiKey:"...", authDomain:"...", databaseURL:"https://YOUR-PROJECT-default-rtdb.firebaseio.com", projectId:"...", appId:"..." }
+const RSVP_PATH        = "avyanna_rsvps";
 const WHATSAPP_NUMBER  = "6597126257";                      // host's WhatsApp, country code, no + or spaces
 
 // ======================================
@@ -302,6 +306,21 @@ const WHATSAPP_NUMBER  = "6597126257";                      // host's WhatsApp, 
 function loadLocal(k, f){ try { return JSON.parse(localStorage.getItem(k) || JSON.stringify(f)); } catch(e){ return f; } }
 function saveLocal(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
 let rsvps  = loadLocal('bejRSVPs', {});
+let fbDb = null;
+function guestKey(name){ return name.trim().toLowerCase().replace(/[.#$\/\[\]\s]+/g, '_').slice(0, 60) || ('g' + Date.now()); }
+function loadScript(src){ return new Promise((ok, bad) => { const t = document.createElement('script'); t.src = src; t.onload = ok; t.onerror = bad; document.head.appendChild(t); }); }
+function initSync(){
+  if (!FIREBASE_CONFIG) return;
+  const v = '10.12.2';
+  loadScript(`https://www.gstatic.com/firebasejs/${v}/firebase-app-compat.js`)
+    .then(() => loadScript(`https://www.gstatic.com/firebasejs/${v}/firebase-database-compat.js`))
+    .then(() => {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      fbDb = firebase.database();
+      fbDb.ref(RSVP_PATH).on('value', snap => { rsvps = snap.val() || {}; renderStats(); renderWall(); });
+    })
+    .catch(() => {});   // offline / blocked: the page keeps working with local data
+}
 let selectedAttend = "";
 
 // Header details
@@ -421,8 +440,11 @@ function handleRSVP(e){
   const guests = yes ? (parseInt(document.getElementById('rsvp-guests').value) || 0) : 0;
   const kids = yes ? (parseInt(document.getElementById('rsvp-kids').value) || 0) : 0;
   const msg = document.getElementById('rsvp-msg').value.trim();
-  rsvps['r' + Date.now()] = { name, attending: yes, guests, kids, message: msg, ts: Date.now() };
+  const rec = { name, attending: yes, guests, kids, message: msg, ts: Date.now() };
+  const key = guestKey(name);
+  rsvps[key] = rec;
   saveLocal('bejRSVPs', rsvps);
+  if (fbDb) fbDb.ref(RSVP_PATH + '/' + key).set(rec).catch(() => {});
   renderStats(); renderWall();
 
   let text = `RSVP for ${CHILD_NAME}'s Bejewelled 10th Birthday 💎\nName: ${name}\n${selectedAttend}`;
@@ -449,6 +471,7 @@ function downloadICS(){
 }
 
 renderStats(); renderWall();
+initSync();
 
 // ---------- Background music (song file sits next to this file) ----------
 const bgAudio = document.getElementById('bg-audio'), fab = document.getElementById('music-fab');
