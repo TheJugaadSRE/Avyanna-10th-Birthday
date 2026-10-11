@@ -46,18 +46,17 @@
   section{padding:22px 0;}
 
   /* HERO */
-  .hero{text-align:center;position:relative;overflow:hidden;border-radius:0 0 28px 28px;margin:0 -20px;padding:0 20px 28px;
-    min-height:min(190vw,1120px);display:flex;flex-direction:column;justify-content:flex-end;}
-  .hero::before{content:'';position:absolute;inset:0;z-index:0;background:url('hero.jpg') center top/cover no-repeat;filter:saturate(1.15);opacity:.85;}
-  .hero::after{content:'';position:absolute;inset:0;z-index:0;
-    background:linear-gradient(180deg,rgba(10,7,22,0) 0%,rgba(10,7,22,.15) 45%,rgba(10,7,22,.82) 72%,var(--bg1) 96%);}
-  .hero > *{position:relative;z-index:1;}
-  .hero > .ball-zone{position:absolute;z-index:2;}
-  .ball-zone{position:absolute;top:0;right:3%;width:min(125px,30vw);z-index:2;}
-  .ball-zone .beams{left:50%;top:0;width:700px;height:420px;}
-  .ball-zone #discoball{width:100%;height:auto;}
-  .ball-zone .ball-string{height:min(56vw,320px);}
+  .hero{text-align:center;position:relative;margin:0 -20px;padding:0 20px 10px;}
+  /* poster as the background of the top block; shows her head down to the dress */
+  .hero-bg{position:relative;max-width:640px;margin:0 auto -90px;aspect-ratio:864/1217;overflow:hidden;
+    background:url('hero.jpg') center top/100% auto no-repeat;
+    -webkit-mask-image:linear-gradient(#000 82%,transparent 100%);mask-image:linear-gradient(#000 82%,transparent 100%);}
+  .hero > *:not(.hero-bg){position:relative;z-index:1;}
   .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+  .ball-zone{position:absolute;top:0;bottom:0;right:4%;width:22%;z-index:2;}
+  .ball-zone .beams{left:50%;top:0;width:620px;height:520px;}
+  .ball-zone .ball-string{position:absolute;left:50%;top:0;height:27%;margin:0;}
+  .ball-zone #discoball{position:absolute;left:0;top:calc(27% - 2px);width:100%;height:auto;}
   .beams{position:absolute;left:50%;top:0;width:900px;height:520px;transform:translateX(-50%);pointer-events:none;
     background:
       conic-gradient(from 200deg at 50% 12%,transparent 0deg,rgba(255,126,182,.20) 8deg,transparent 18deg,
@@ -158,10 +157,12 @@
 <div class="wrap">
 
   <div class="hero">
-        <div class="ball-zone">
+    <div class="hero-bg">
+      <div class="ball-zone">
       <div class="beams"></div>
       <div class="ball-string"></div>
       <canvas id="discoball" width="560" height="560"></canvas>
+    </div>
     </div>
     <button id="music-fab" onclick="toggleMusic()">🔊 Play music</button>
     <audio id="bg-audio" src="Taylor%20Swift%20-%20Bejeweled%20Lyric%20Video.mp3" loop preload="auto"></audio>
