@@ -48,17 +48,19 @@
   section{padding:22px 0;}
 
   /* HERO */
-  .hero{text-align:center;padding:34px 0 10px;position:relative;margin:0;}
-  .hero > :not(.beams){position:relative;z-index:1;}
-  /* poster (head to dress) as the background behind the 10 + invite text */
-  .poster-block{position:relative;max-width:640px;margin:-10px auto 0;}
-  .poster-block::before{content:'';position:absolute;top:0;left:0;right:0;aspect-ratio:675/702;z-index:0;
-    background:url('poster-bg.jpg') center top/100% 100% no-repeat;border-radius:22px;
-    -webkit-mask-image:linear-gradient(transparent 0,#000 7%,#000 70%,transparent 100%);mask-image:linear-gradient(transparent 0,#000 7%,#000 70%,transparent 100%);}
-  .poster-block::after{content:'';position:absolute;top:0;left:0;right:0;aspect-ratio:675/702;z-index:0;border-radius:22px;
-    background:linear-gradient(180deg,rgba(10,7,22,0) 0%,rgba(10,7,22,0) 34%,rgba(10,7,22,.55) 58%,rgba(10,7,22,.9) 80%);}
-  .poster-block > *{position:relative;z-index:1;}
-  .poster-text{padding-top:66%;padding-bottom:6px;}
+  .hero{text-align:center;padding:0 0 10px;position:relative;margin:0;}
+  .hero > *{position:relative;z-index:1;}
+  /* top row: disco ball | Taylor poster | disco ball */
+  .top-row{display:grid;grid-template-columns:1fr minmax(0,56%) 1fr;align-items:start;max-width:780px;margin:0 auto;position:relative;}
+  .ball-col{position:relative;}
+  .ball-col .beams{position:absolute;left:50%;top:0;width:520px;height:420px;z-index:0;}
+  .ball-col .ball-string{position:relative;z-index:1;height:clamp(40px,12vw,90px);}
+  .ball-col .discoball{display:block;position:relative;z-index:1;width:100%;max-width:150px;height:auto;margin:0 auto;
+    filter:drop-shadow(0 0 14px rgba(255,255,255,.4)) drop-shadow(0 0 30px rgba(155,107,255,.55));}
+  .poster-top{position:relative;z-index:1;aspect-ratio:675/702;background:url('poster-bg.jpg') center/100% 100% no-repeat;border-radius:0 0 22px 22px;
+    -webkit-mask-image:linear-gradient(#000 80%,transparent 100%);mask-image:linear-gradient(#000 80%,transparent 100%);
+    filter:saturate(1.1);}
+  .top-row + .invite-label{margin-top:-26px;}
   .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
   .beams{position:absolute;left:50%;top:0;width:900px;height:520px;transform:translateX(-50%);pointer-events:none;
     background:
@@ -70,8 +72,6 @@
     animation:sweep 14s linear infinite;}
   @keyframes sweep{0%{transform:translateX(-50%) rotate(-6deg);}50%{transform:translateX(-50%) rotate(6deg);}100%{transform:translateX(-50%) rotate(-6deg);}}
   .ball-string{width:2px;height:70px;margin:0 auto;background:linear-gradient(#555,#ccc);position:relative;z-index:1;}
-  #discoball{display:block;margin:0 auto;position:relative;z-index:1;width:min(280px,70vw);height:min(280px,70vw);
-    filter:drop-shadow(0 0 30px rgba(255,255,255,.35)) drop-shadow(0 0 60px rgba(155,107,255,.5));}
   .invite-label{letter-spacing:5px;font-size:13px;color:var(--ice);text-shadow:0 0 10px var(--ice);font-weight:600;margin:20px 0 6px;position:relative;z-index:1;}
   .hero h1{
     position:relative;z-index:1;font-size:clamp(44px,13vw,92px);font-weight:900;line-height:1.05;
@@ -160,20 +160,18 @@
 <div class="wrap">
 
   <div class="hero">
-    <div class="beams"></div>
-    <div class="ball-string"></div>
     <button id="music-fab" onclick="toggleMusic()">🔊 Play music</button>
     <audio id="bg-audio" src="Taylor%20Swift%20-%20Bejeweled%20Lyric%20Video.mp3" loop preload="auto"></audio>
-    <canvas id="discoball" width="560" height="560"></canvas>
+    <div class="top-row">
+      <div class="ball-col"><div class="beams"></div><div class="ball-string"></div><canvas class="discoball" width="560" height="560"></canvas></div>
+      <div class="poster-top" role="img" aria-label="Avyanna's Bejewelled Birthday"></div>
+      <div class="ball-col"><div class="beams"></div><div class="ball-string"></div><canvas class="discoball" width="560" height="560"></canvas></div>
+    </div>
     <div class="invite-label">✦ YOU'RE INVITED TO A SPARKLY SURPRISE ✦</div>
     <h1 id="child-name">NAME</h1>
-    <div class="poster-block">
-      <div class="poster-text">
-        <div class="big10"><span>1</span><span>0</span></div>
-        <div class="tagline"><b>Avyanna</b> is officially going <b>double digits!</b> 🎉 Join her for a night of disco lights, jewels, glitter and dancing with her BFFs 💎🪩✨</div>
-        <div class="badge">💎 A Decade of Sparkle 💎</div>
-      </div>
-    </div>
+    <div class="big10"><span>1</span><span>0</span></div>
+    <div class="tagline"><b>Avyanna</b> is officially going <b>double digits!</b> 🎉 Join her for a night of disco lights, jewels, glitter and dancing with her BFFs 💎🪩✨</div>
+    <div class="badge">💎 A Decade of Sparkle 💎</div>
   </div>
 
   <section>
@@ -300,8 +298,8 @@ addEventListener('mousemove', e => glow(e.clientX, e.clientY));
 addEventListener('touchmove', e => { if (e.touches[0]) glow(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
 
 // ---------- Disco ball (canvas, rotating mirror tiles) ----------
-(function(){
-  const cv = document.getElementById('discoball'), ctx = cv.getContext('2d');
+document.querySelectorAll('.discoball').forEach(function(cv){
+  const ctx = cv.getContext('2d');
   const W = cv.width, R = W*0.46, C = W/2;
   const LAT = 18, LON = 36;
   const tiles = [];
@@ -332,7 +330,7 @@ addEventListener('touchmove', e => { if (e.touches[0]) glow(e.touches[0].clientX
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
-})();
+});
 
 // ---------- Countdown ----------
 const eventTs = new Date(EVENT_DATETIME_ISO).getTime();
