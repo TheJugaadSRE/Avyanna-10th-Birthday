@@ -295,7 +295,15 @@ const VENUE_MAP_URL    = "https://www.google.com/maps/search/?api=1&query=" + en
 const RSVP_BY_LABEL    = "Oct 14, 2026";
 // Shared RSVP counts: paste your Firebase web-app config here (Firebase console > Project settings > Your apps).
 // Leave as null to keep RSVPs on each guest's own device only (counts will NOT be shared between phones).
-const FIREBASE_CONFIG  = null;   // e.g. { apiKey:"...", authDomain:"...", databaseURL:"https://YOUR-PROJECT-default-rtdb.firebaseio.com", projectId:"...", appId:"..." }
+const FIREBASE_CONFIG  = {
+  apiKey: "AIzaSyAgreJRXUsRtBqf3z8p5PAj5AfofX3K-7E",
+  authDomain: "avyannas-10th-birthday.firebaseapp.com",
+  databaseURL: "https://avyannas-10th-birthday-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "avyannas-10th-birthday",
+  storageBucket: "avyannas-10th-birthday.firebasestorage.app",
+  messagingSenderId: "1029065369037",
+  appId: "1:1029065369037:web:f38c0c82f40b8ca0c3d084"
+};
 const RSVP_PATH        = "avyanna_rsvps";
 const WHATSAPP_NUMBER  = "6597126257";                      // host's WhatsApp, country code, no + or spaces
 
