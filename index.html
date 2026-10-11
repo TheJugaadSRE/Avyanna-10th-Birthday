@@ -46,17 +46,18 @@
   section{padding:22px 0;}
 
   /* HERO */
-  .hero{text-align:center;position:relative;margin:0 -20px;padding:0 20px 10px;}
-  /* poster as the background of the top block; shows her head down to the dress */
-  .hero-bg{position:relative;max-width:640px;margin:4px auto -90px;aspect-ratio:864/825;overflow:hidden;
-    background:url('hero.jpg') center top/100% auto no-repeat;
-    -webkit-mask-image:linear-gradient(transparent 0,#000 9%,#000 82%,transparent 100%);mask-image:linear-gradient(transparent 0,#000 9%,#000 82%,transparent 100%);}
-  .hero > *:not(.hero-bg){position:relative;z-index:1;}
+  .hero{text-align:center;padding:34px 0 10px;position:relative;margin:0;}
+  .hero > :not(.beams){position:relative;z-index:1;}
+  /* poster (head to dress) as the background behind the 10 + invite text */
+  .poster-block{position:relative;max-width:640px;margin:-10px auto 0;}
+  .poster-block::before{content:'';position:absolute;top:0;left:0;right:0;aspect-ratio:675/702;z-index:0;
+    background:url('poster-bg.jpg') center top/100% 100% no-repeat;border-radius:22px;
+    -webkit-mask-image:linear-gradient(transparent 0,#000 7%,#000 70%,transparent 100%);mask-image:linear-gradient(transparent 0,#000 7%,#000 70%,transparent 100%);}
+  .poster-block::after{content:'';position:absolute;top:0;left:0;right:0;aspect-ratio:675/702;z-index:0;border-radius:22px;
+    background:linear-gradient(180deg,rgba(10,7,22,0) 0%,rgba(10,7,22,0) 34%,rgba(10,7,22,.55) 58%,rgba(10,7,22,.9) 80%);}
+  .poster-block > *{position:relative;z-index:1;}
+  .poster-text{padding-top:66%;padding-bottom:6px;}
   .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
-  .ball-zone{position:absolute;top:0;bottom:0;right:4%;width:22%;z-index:2;}
-  .ball-zone .beams{left:50%;top:0;width:620px;height:520px;}
-  .ball-zone .ball-string{position:absolute;left:50%;top:0;height:14%;margin:0;}
-  .ball-zone #discoball{position:absolute;left:0;top:calc(14% - 2px);width:100%;height:auto;}
   .beams{position:absolute;left:50%;top:0;width:900px;height:520px;transform:translateX(-50%);pointer-events:none;
     background:
       conic-gradient(from 200deg at 50% 12%,transparent 0deg,rgba(255,126,182,.20) 8deg,transparent 18deg,
@@ -157,20 +158,20 @@
 <div class="wrap">
 
   <div class="hero">
-    <div class="invite-label">✦ YOU'RE INVITED TO A SPARKLY SURPRISE ✦</div>
-    <h1 id="child-name">NAME</h1>
-    <div class="hero-bg">
-      <div class="ball-zone">
-      <div class="beams"></div>
-      <div class="ball-string"></div>
-      <canvas id="discoball" width="560" height="560"></canvas>
-    </div>
-    </div>
+    <div class="beams"></div>
+    <div class="ball-string"></div>
     <button id="music-fab" onclick="toggleMusic()">🔊 Play music</button>
     <audio id="bg-audio" src="Taylor%20Swift%20-%20Bejeweled%20Lyric%20Video.mp3" loop preload="auto"></audio>
-    <div class="big10"><span>1</span><span>0</span></div>
-    <div class="tagline"><b>Avyanna</b> is officially going <b>double digits!</b> 🎉 Join her for a night of disco lights, jewels, glitter and dancing with her BFFs 💎🪩✨</div>
-    <div class="badge">💎 A Decade of Sparkle 💎</div>
+    <canvas id="discoball" width="560" height="560"></canvas>
+    <div class="invite-label">✦ YOU'RE INVITED TO A SPARKLY SURPRISE ✦</div>
+    <h1 id="child-name">NAME</h1>
+    <div class="poster-block">
+      <div class="poster-text">
+        <div class="big10"><span>1</span><span>0</span></div>
+        <div class="tagline"><b>Avyanna</b> is officially going <b>double digits!</b> 🎉 Join her for a night of disco lights, jewels, glitter and dancing with her BFFs 💎🪩✨</div>
+        <div class="badge">💎 A Decade of Sparkle 💎</div>
+      </div>
+    </div>
   </div>
 
   <section>
